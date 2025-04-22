@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Wicked Data Picker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        table {
+            width: 80%;
+            margin: 1rem auto;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #aaa;
+            padding: 0.5rem;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:nth-child(odd) {
+            background-color: #ffffff;
+        }
+
+        th {
+            background-color: #ddd;
+        }
+
+        button {
+            padding: 0.5rem 1.5rem;
+            font-size: 1rem;
+            font-family: 'Montserrat', sans-serif;
+            cursor: pointer;
+            background-color: #3403e6;
+            color: white;
+            border: black solid;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #613aee;
+        }
+
+        #loading {
+            margin-top: 1rem;
+            font-style: italic;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>This month's picks:</h1>
+    <button onclick="fetchData()">Get Picks</button>
+    <div id="loading"></div>
+
+    <table id="resultsTable">
+        <thead>
+            <tr id="tableHeader"></tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+    <script>
+        const endpoint = "https://script.google.com/macros/s/AKfycbzVsgra6y47mXplZyZMOhpG0XiqOD6aIhqnQyXMjdNgdDaPIVRhM4VY-DAvNJyhYCR7/exec";
+
+        function fetchData() {
+            const loading = document.getElementById("loading");
+            const header = document.getElementById("tableHeader");
+            const body = document.getElementById("tableBody");
+
+            // Clear previous data and show loading
+            loading.textContent = "Loading...";
+            header.innerHTML = "";
+            body.innerHTML = "";
+
+            fetch(endpoint)
+                .then(response => response.json())
+                .then(data => {
+                    loading.textContent = ""; // Clear loading message
+
+                    if (data.length === 0) {
+                        header.innerHTML = "<th>No data</th>";
+                        return;
+                    }
+
+                    const th1 = document.createElement("th");
+                    th1.textContent = `Name`;
+                    header.appendChild(th1);
+                    const th2 = document.createElement("th");
+                    th2.textContent = `Type`;
+                    header.appendChild(th2);
+                    const th3 = document.createElement("th");
+                    th3.textContent = `Length`;
+                    header.appendChild(th3);
+                    const th4 = document.createElement("th");
+                    th4.textContent = `Synopsis`;
+                    header.appendChild(th4);
+                    const th5 = document.createElement("th");
+                    th5.textContent = `Sender`;
+                    header.appendChild(th5);
+
+
+                    // Create body rows
+                    data.forEach(row => {
+                        const tr = document.createElement("tr");
+                        row.forEach(cell => {
+                            const td = document.createElement("td");
+                            td.textContent = cell;
+                            tr.appendChild(td);
+                        });
+                        body.appendChild(tr);
+                    });
+                })
+                .catch(error => {
+                    loading.textContent = ""; // Clear loading message
+                    console.error("Error fetching data:", error);
+                    alert("Failed to fetch data.");
+                });
+        }
+    </script>
+
+</body>
+
+</html>
